@@ -6,3 +6,5 @@ https://www.pjrc.com/store/audio_tutorial_kit.html
 
 For its: 3.5” IPS 480×320 ST7796 LCD with capacitive touchscreen
 Using this display library: https://github.com/KurtE/ST7735_t3/tree/ST7796
+
+To use the Ethernet: https://github.com/ssilverman/QNEthernet
