@@ -12,10 +12,13 @@
 #define SD_CS     4  // CS for SD card, can use any pin
 
 #include <Adafruit_GFX.h>
-#include <ST7735_t3.h>
+//#include <ST7735_t3.h>
+#include <ST7796_t3.h> // Hardware-specific library
 #include <SPI.h>
 
-ST7735_t3 disp = ST7735_t3(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+// ST7735_t3 disp = ST7735_t3(TFT_CS, TFT_DC, TFT_MOSI, TFT_SCLK, TFT_RST);
+// For 3.5" or 4.0" TFT with ST7796
+ST7796_t3 disp = ST7796_t3(TFT_CS, TFT_DC, TFT_RST);
 
 #define RGB(r,g,b) (b<<11|g<<6|r)
 
@@ -218,9 +221,11 @@ void setup()
 	pinMode(SD_CS, INPUT_PULLUP);  // keep SD CS high when not using SD card
 
 	// Use this initializer if you're using a 1.8" TFT
-	disp.initR(INITR_BLACKTAB);
+	//disp.initR(INITR_BLACKTAB);
 	// Use this initializer (uncomment) if you're using a 1.44" TFT
 	//disp.initR(INITR_144GREENTAB);
+  disp.init(320, 480);
+
 
 	disp.setRotation(0);
 	disp.setTextWrap(true);

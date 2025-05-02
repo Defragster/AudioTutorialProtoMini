@@ -1,4 +1,3 @@
-
 /*
     This sketch interfaces the ESP32-C3 to the Teensy 4.1 via serial port 2.
     It demonstrates how to receive a request for a scan for WiFi networks and 
