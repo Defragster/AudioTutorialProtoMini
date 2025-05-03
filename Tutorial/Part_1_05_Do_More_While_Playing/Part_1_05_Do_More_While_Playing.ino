@@ -26,22 +26,22 @@ Bounce button0 = Bounce(0, 15);
 Bounce button2 = Bounce(2, 15);  // 15 = 15 ms debounce time
 
 // Use these with the Teensy Audio Shield
-#define SDCARD_CS_PIN    10
-#define SDCARD_MOSI_PIN  7   // Teensy 4 ignores this, uses pin 11
-#define SDCARD_SCK_PIN   14  // Teensy 4 ignores this, uses pin 13
+//#define SDCARD_CS_PIN    10
+//#define SDCARD_MOSI_PIN  7   // Teensy 4 ignores this, uses pin 11
+//#define SDCARD_SCK_PIN   14  // Teensy 4 ignores this, uses pin 13
 
 // Use these with the Teensy 3.5 & 3.6 & 4.1 SD card
-//#define SDCARD_CS_PIN    BUILTIN_SDCARD
-//#define SDCARD_MOSI_PIN  11  // not actually used
-//#define SDCARD_SCK_PIN   13  // not actually used
+#define SDCARD_CS_PIN    BUILTIN_SDCARD
+#define SDCARD_MOSI_PIN  11  // not actually used
+#define SDCARD_SCK_PIN   13  // not actually used
 
 // Use these for the SD+Wiz820 or other adaptors
 //#define SDCARD_CS_PIN    4
 //#define SDCARD_MOSI_PIN  11
 //#define SDCARD_SCK_PIN   13
 
-#define LED_PIN    5
-//#define LED_PIN 13
+//#define LED_PIN    5
+#define LED_PIN 13
 
 void setup() {
   Serial.begin(9600);

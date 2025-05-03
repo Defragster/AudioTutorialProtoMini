@@ -5,6 +5,11 @@
 // 
 // Part 2-8: Oscillators
 
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
 #include <Bounce.h>
 
 Bounce button0 = Bounce(0, 15);
@@ -15,6 +20,29 @@ Bounce button2 = Bounce(2, 15);
 ///////////////////////////////////
 // copy the Design Tool code here
 ///////////////////////////////////
+// Part 2-8: Oscillators and Envelope
+
+// GUItool: begin automatically generated code
+AudioSynthWaveform       waveform1;      //xy=77,30
+AudioSynthWaveformSine   sine1;          //xy=87,159
+AudioSynthNoisePink      pink1;          //xy=110,221
+AudioSynthWaveformSineModulated sine_fm1;       //xy=145,102
+AudioMixer4              mixer1;         //xy=313,111
+AudioEffectEnvelope      envelope1;      //xy=454,165
+AudioMixer4              mixer2;         //xy=589,87
+AudioOutputI2S           i2s1;           //xy=725,149
+AudioConnection          patchCord1(waveform1, sine_fm1);
+AudioConnection          patchCord2(waveform1, 0, mixer1, 0);
+AudioConnection          patchCord3(sine1, 0, mixer1, 2);
+AudioConnection          patchCord4(pink1, 0, mixer1, 3);
+AudioConnection          patchCord5(sine_fm1, 0, mixer1, 1);
+AudioConnection          patchCord6(mixer1, envelope1);
+AudioConnection          patchCord7(mixer1, 0, mixer2, 0);
+AudioConnection          patchCord8(envelope1, 0, mixer2, 1);
+AudioConnection          patchCord9(mixer2, 0, i2s1, 0);
+AudioConnection          patchCord10(mixer2, 0, i2s1, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=317,208
+// GUItool: end automatically generated code
 
 
 

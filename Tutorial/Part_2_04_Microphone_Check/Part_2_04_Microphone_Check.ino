@@ -6,9 +6,22 @@
 // Part 2-4: Using The Microphone
 
 
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
 ///////////////////////////////////
 // copy the Design Tool code here
 ///////////////////////////////////
+// Part 2-4: Using the Microphone
+// GUItool: begin automatically generated code
+AudioInputI2S            i2s2;           //xy=95,64
+AudioOutputI2S           i2s1;           //xy=286,88
+AudioConnection          patchCord1(i2s2, 0, i2s1, 0);
+AudioConnection          patchCord2(i2s2, 0, i2s1, 1);
+AudioControlSGTL5000     sgtl5000_1;     //xy=226,155
+// GUItool: end automatically generated code
 
 
 
