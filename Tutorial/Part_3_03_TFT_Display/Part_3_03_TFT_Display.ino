@@ -5,19 +5,39 @@
 // 
 // Part 3-3: Add a TFT Display
 
-#include <ILI9341_t3.h>
-#include <font_Arial.h> // from ILI9341_t3
+// #include <ILI9341_t3.h>
+// #include <font_Arial.h> // from ILI9341_t3
+#include <ST7796_t3.h>
+#include <st7735_t3_font_Arial.h>
 
+#include <Adafruit_FT6206.h>
+
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
 
 ///////////////////////////////////
 // copy the Design Tool code here
 ///////////////////////////////////
-
+// GUItool: begin automatically generated code
+AudioPlaySdWav           playSdWav1;     //xy=136,65
+AudioAnalyzePeak         peak2;          //xy=348,219
+AudioAnalyzePeak         peak1;          //xy=358,171
+AudioOutputI2S           i2s1;           //xy=380,92
+AudioConnection          patchCord1(playSdWav1, 0, i2s1, 0);
+AudioConnection          patchCord2(playSdWav1, 0, peak1, 0);
+AudioConnection          patchCord3(playSdWav1, 1, i2s1, 1);
+AudioConnection          patchCord4(playSdWav1, 1, peak2, 0);
+AudioControlSGTL5000     sgtl5000_1;     //xy=155,192
+// GUItool: end automatically generated code
 
 
 // Use these with the Teensy 4.x and Audio Shield Rev D or D2
 #define TFT_DC       9
-#define TFT_CS      22
+//#define TFT_CS      22
+#define TFT_CS      10
 #define TFT_RST    255  // 255 = unused, connect to 3.3V
 #define TFT_MOSI    11
 #define TFT_SCLK    13
@@ -31,18 +51,19 @@
 //#define TFT_SCLK    14
 //#define TFT_MISO    12
 
-ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
+// ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MISO);
+ST7796_t3 tft = ST7796_t3(TFT_CS, TFT_DC);
 
 
 // Use these with the Teensy Audio Shield
-#define SDCARD_CS_PIN    10
-#define SDCARD_MOSI_PIN  7   // Teensy 4 ignores this, uses pin 11
-#define SDCARD_SCK_PIN   14  // Teensy 4 ignores this, uses pin 13
+//#define SDCARD_CS_PIN    10
+//#define SDCARD_MOSI_PIN  7   // Teensy 4 ignores this, uses pin 11
+//#define SDCARD_SCK_PIN   14  // Teensy 4 ignores this, uses pin 13
 
 // Use these with the Teensy 3.5 & 3.6 & 4.1 SD card
-//#define SDCARD_CS_PIN    BUILTIN_SDCARD
-//#define SDCARD_MOSI_PIN  11  // not actually used
-//#define SDCARD_SCK_PIN   13  // not actually used
+#define SDCARD_CS_PIN    BUILTIN_SDCARD
+#define SDCARD_MOSI_PIN  11  // not actually used
+#define SDCARD_SCK_PIN   13  // not actually used
 
 // Use these for the SD+Wiz820 or other adaptors
 //#define SDCARD_CS_PIN    4
@@ -52,10 +73,15 @@ ILI9341_t3 tft = ILI9341_t3(TFT_CS, TFT_DC, TFT_RST, TFT_MOSI, TFT_SCLK, TFT_MIS
 void setup() {
   Serial.begin(9600);
   delay(500);
-  tft.setClock(16000000);
-  tft.begin();
-  tft.fillScreen(ILI9341_BLACK);
-  tft.setTextColor(ILI9341_YELLOW);
+  //tft.setClock(16000000);
+  //tft.begin();
+    // Setup the LCD screen
+  tft.init(320, 480);
+  tft.invertDisplay(true);  // LCD requires colors to be inverted
+  tft.setRotation(3);       // Rotates screen to match the baseboard orientation
+
+  tft.fillScreen(ST7735_BLACK);
+  tft.setTextColor(ST7735_YELLOW);
   tft.setFont(Arial_24);
   //tft.setTextSize(3);
   tft.setCursor(40, 8);
@@ -63,9 +89,9 @@ void setup() {
   
   AudioMemory(10);
   sgtl5000_1.enable();
-  sgtl5000_1.volume(0.5);
-  SPI.setMOSI(SDCARD_MOSI_PIN);
-  SPI.setSCK(SDCARD_SCK_PIN);
+  sgtl5000_1.volume(0.3);
+//  SPI.setMOSI(SDCARD_MOSI_PIN);
+//  SPI.setSCK(SDCARD_SCK_PIN);
   if (!(SD.begin(SDCARD_CS_PIN))) {
     while (1) {
       Serial.println("Unable to access the SD card");
@@ -87,9 +113,9 @@ void loop() {
     delay(10); // wait for library to parse WAV info
   }
   
-  if (msecs > 15) {
-    if (peak1.available() && peak2.available()) {
+  if (msecs > 75) {
       msecs = 0;
+    if (peak1.available() && peak2.available()) {
       float leftNumber = peak1.read();
       float rightNumber = peak2.read();
       Serial.print(leftNumber);
@@ -97,23 +123,30 @@ void loop() {
       Serial.print(rightNumber);
       Serial.println();
 
+
       // draw the verticle bars
       int height = leftNumber * 240;
-      tft.fillRect(60, 280 - height, 40, height, ILI9341_GREEN);
-      tft.fillRect(60, 280 - 240, 40, 240 - height, ILI9341_BLACK);
+      tft.fillRect(60, 280 - height, 40, height, ST7735_GREEN);
+      tft.fillRect(60, 280 - 240, 40, 240 - height, ST7735_BLACK);
       height = rightNumber * 240;
-      tft.fillRect(140, 280 - height, 40, height, ILI9341_GREEN);
-      tft.fillRect(140, 280 - 240, 40, 240 - height, ILI9341_BLACK);
+      tft.fillRect(140, 280 - height, 40, height, ST7735_GREEN);
+      tft.fillRect(140, 280 - 240, 40, 240 - height, ST7735_BLACK);
       // a smarter approach would redraw only the changed portion...
+/*
+*/
 
       // draw numbers underneath each bar
       tft.setFont(Arial_14);
-      tft.fillRect(60, 284, 40, 16, ILI9341_BLACK);
+      tft.fillRect(60, 284, 40, 16, ST7735_BLACK);
       tft.setCursor(60, 284);
       tft.print(leftNumber);
-      tft.fillRect(140, 284, 40, 16, ILI9341_BLACK);
+      tft.fillRect(140, 284, 40, 16, ST7735_BLACK);
       tft.setCursor(140, 284);
-      tft.print(rightNumber);
+//      tft.print(rightNumber);
+      tft.print(msecs);
+
+      msecs = 0;
+
     }
   }
 }
