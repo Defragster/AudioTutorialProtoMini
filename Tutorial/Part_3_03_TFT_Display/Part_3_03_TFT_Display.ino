@@ -113,7 +113,7 @@ void loop() {
     delay(10); // wait for library to parse WAV info
   }
   
-  if (msecs > 75) {
+  if (msecs > 15) {
       msecs = 0;
     if (peak1.available() && peak2.available()) {
       float leftNumber = peak1.read();
@@ -123,7 +123,6 @@ void loop() {
       Serial.print(rightNumber);
       Serial.println();
 
-
       // draw the verticle bars
       int height = leftNumber * 240;
       tft.fillRect(60, 280 - height, 40, height, ST7735_GREEN);
@@ -132,9 +131,6 @@ void loop() {
       tft.fillRect(140, 280 - height, 40, height, ST7735_GREEN);
       tft.fillRect(140, 280 - 240, 40, 240 - height, ST7735_BLACK);
       // a smarter approach would redraw only the changed portion...
-/*
-*/
-
       // draw numbers underneath each bar
       tft.setFont(Arial_14);
       tft.fillRect(60, 284, 40, 16, ST7735_BLACK);
@@ -142,11 +138,7 @@ void loop() {
       tft.print(leftNumber);
       tft.fillRect(140, 284, 40, 16, ST7735_BLACK);
       tft.setCursor(140, 284);
-//      tft.print(rightNumber);
-      tft.print(msecs);
-
-      msecs = 0;
-
+      tft.print(rightNumber);
     }
   }
 }
