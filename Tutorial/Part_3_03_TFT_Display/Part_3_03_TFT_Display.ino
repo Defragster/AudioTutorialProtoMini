@@ -78,7 +78,7 @@ void setup() {
     // Setup the LCD screen
   tft.init(320, 480);
   tft.invertDisplay(true);  // LCD requires colors to be inverted
-  tft.setRotation(3);       // Rotates screen to match the baseboard orientation
+  tft.setRotation(2);       // Rotates screen to match the baseboard orientation
 
   tft.fillScreen(ST7735_BLACK);
   tft.setTextColor(ST7735_YELLOW);
@@ -89,7 +89,7 @@ void setup() {
   
   AudioMemory(10);
   sgtl5000_1.enable();
-  sgtl5000_1.volume(0.3);
+  sgtl5000_1.volume(0.1);
 //  SPI.setMOSI(SDCARD_MOSI_PIN);
 //  SPI.setSCK(SDCARD_SCK_PIN);
   if (!(SD.begin(SDCARD_CS_PIN))) {
@@ -114,7 +114,6 @@ void loop() {
   }
   
   if (msecs > 15) {
-      msecs = 0;
     if (peak1.available() && peak2.available()) {
       float leftNumber = peak1.read();
       float rightNumber = peak2.read();
@@ -124,21 +123,22 @@ void loop() {
       Serial.println();
 
       // draw the verticle bars
-      int height = leftNumber * 240;
-      tft.fillRect(60, 280 - height, 40, height, ST7735_GREEN);
-      tft.fillRect(60, 280 - 240, 40, 240 - height, ST7735_BLACK);
-      height = rightNumber * 240;
-      tft.fillRect(140, 280 - height, 40, height, ST7735_GREEN);
-      tft.fillRect(140, 280 - 240, 40, 240 - height, ST7735_BLACK);
+      int height = leftNumber * 380;
+      tft.fillRect(60, 420 - height, 40, height, ST7735_GREEN);
+      tft.fillRect(60, 420 - 380, 40, 380 - height, ST7735_BLACK);
+      height = rightNumber * 380;
+      tft.fillRect(140, 420 - height, 40, height, ST7735_GREEN);
+      tft.fillRect(140, 420 - 380, 40, 380 - height, ST7735_BLACK);
       // a smarter approach would redraw only the changed portion...
       // draw numbers underneath each bar
       tft.setFont(Arial_14);
-      tft.fillRect(60, 284, 40, 16, ST7735_BLACK);
-      tft.setCursor(60, 284);
+      tft.fillRect(60, 444, 40, 16, ST7735_BLACK);
+      tft.setCursor(60, 444);
       tft.print(leftNumber);
-      tft.fillRect(140, 284, 40, 16, ST7735_BLACK);
-      tft.setCursor(140, 284);
+      tft.fillRect(140, 444, 40, 16, ST7735_BLACK);
+      tft.setCursor(140, 444);
       tft.print(rightNumber);
+    msecs = 0;
     }
   }
 }
