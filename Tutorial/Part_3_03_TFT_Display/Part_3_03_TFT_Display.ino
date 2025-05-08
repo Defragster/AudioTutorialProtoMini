@@ -2,7 +2,7 @@
 //
 // http://www.pjrc.com/store/audio_tutorial_kit.html
 // https://hackaday.io/project/8292-microcontroller-audio-workshop-had-supercon-2015
-// 
+//
 // Part 3-3: Add a TFT Display
 
 // #include <ILI9341_t3.h>
@@ -75,7 +75,7 @@ void setup() {
   delay(500);
   //tft.setClock(16000000);
   //tft.begin();
-    // Setup the LCD screen
+  // Setup the LCD screen
   tft.init(320, 480);
   tft.invertDisplay(true);  // LCD requires colors to be inverted
   tft.setRotation(2);       // Rotates screen to match the baseboard orientation
@@ -86,12 +86,12 @@ void setup() {
   //tft.setTextSize(3);
   tft.setCursor(40, 8);
   tft.println("Peak Meter");
-  
+
   AudioMemory(10);
   sgtl5000_1.enable();
   sgtl5000_1.volume(0.1);
-//  SPI.setMOSI(SDCARD_MOSI_PIN);
-//  SPI.setSCK(SDCARD_SCK_PIN);
+  //  SPI.setMOSI(SDCARD_MOSI_PIN);
+  //  SPI.setSCK(SDCARD_SCK_PIN);
   if (!(SD.begin(SDCARD_CS_PIN))) {
     while (1) {
       Serial.println("Unable to access the SD card");
@@ -112,11 +112,13 @@ void loop() {
     //playSdWav1.play("SDTEST4.WAV");
     delay(10); // wait for library to parse WAV info
   }
-  
+
   if (msecs > 15) {
     if (peak1.available() && peak2.available()) {
       float leftNumber = peak1.read();
       float rightNumber = peak2.read();
+      static int leftNumberOld = 0;
+      static int rightNumberOld = 0;
       Serial.print(leftNumber);
       Serial.print(", ");
       Serial.print(rightNumber);
@@ -124,11 +126,17 @@ void loop() {
 
       // draw the verticle bars
       int height = leftNumber * 380;
-      tft.fillRect(60, 420 - height, 40, height, ST7735_GREEN);
-      tft.fillRect(60, 420 - 380, 40, 380 - height, ST7735_BLACK);
+      if ( height > leftNumberOld )
+        tft.fillRect(60, 420 - height, 40, height, ST7735_GREEN);
+      else
+        tft.fillRect(60, 420 - 380, 40, 380 - height, ST7735_BLACK);
+      leftNumberOld = height;
       height = rightNumber * 380;
-      tft.fillRect(140, 420 - height, 40, height, ST7735_GREEN);
-      tft.fillRect(140, 420 - 380, 40, 380 - height, ST7735_BLACK);
+      if ( height > rightNumberOld )
+        tft.fillRect(140, 420 - height, 40, height, ST7735_GREEN);
+      else
+        tft.fillRect(140, 420 - 380, 40, 380 - height, ST7735_BLACK);
+      rightNumberOld = height;
       // a smarter approach would redraw only the changed portion...
       // draw numbers underneath each bar
       tft.setFont(Arial_14);
@@ -138,7 +146,7 @@ void loop() {
       tft.fillRect(140, 444, 40, 16, ST7735_BLACK);
       tft.setCursor(140, 444);
       tft.print(rightNumber);
-    msecs = 0;
+      msecs = 0;
     }
   }
 }
