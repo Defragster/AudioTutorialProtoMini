@@ -10,6 +10,10 @@
 #include <ST7796_t3.h>
 #include <st7735_t3_font_Arial.h>
 
+#define ALT_LIB
+#ifdef ALT_LIB
+#endif // ALT_LIB
+
 #include <Adafruit_FT6206.h>
 
 #include <Audio.h>
@@ -84,7 +88,7 @@ void setup() {
   tft.setTextColor(ST7735_YELLOW);
   tft.setFont(Arial_24);
   //tft.setTextSize(3);
-  tft.setCursor(40, 8);
+  tft.setCursor(10, 8);
   tft.println("Peak Meter");
 
   AudioMemory(10);
@@ -98,6 +102,11 @@ void setup() {
       delay(500);
     }
   }
+
+#ifdef ALT_LIB
+  tft.setMaxTransaction(2000); // default is 1000, but this should be OK
+#endif // ALT_LIB
+
   delay(1000);
 }
 
@@ -127,25 +136,39 @@ void loop() {
       // draw the verticle bars
       int height = leftNumber * 380;
       if ( height > leftNumberOld )
-        tft.fillRect(60, 420 - height, 40, height, ST7735_GREEN);
+        tft.fillRect(20, 420 - height, 50, height, ST7735_GREEN);
       else
-        tft.fillRect(60, 420 - 380, 40, 380 - height, ST7735_BLACK);
+        tft.fillRect(20, 420 - 380, 50, 380 - height, ST7735_BLACK);
       leftNumberOld = height;
       height = rightNumber * 380;
       if ( height > rightNumberOld )
-        tft.fillRect(140, 420 - height, 40, height, ST7735_GREEN);
+        tft.fillRect(90, 420 - height, 50, height, ST7735_GREEN);
       else
-        tft.fillRect(140, 420 - 380, 40, 380 - height, ST7735_BLACK);
+        tft.fillRect(90, 420 - 380, 50, 380 - height, ST7735_BLACK);
       rightNumberOld = height;
       // a smarter approach would redraw only the changed portion...
       // draw numbers underneath each bar
       tft.setFont(Arial_14);
-      tft.fillRect(60, 444, 40, 16, ST7735_BLACK);
-      tft.setCursor(60, 444);
+      tft.fillRect(20, 444, 40, 16, ST7735_BLACK);
+      tft.setCursor(20, 444);
       tft.print(leftNumber);
-      tft.fillRect(140, 444, 40, 16, ST7735_BLACK);
-      tft.setCursor(140, 444);
+      tft.fillRect(100, 444, 40, 16, ST7735_BLACK);
+      tft.setCursor(100, 444);
       tft.print(rightNumber);
+#ifdef ALT_LIB
+      static uint32_t cnt=0;
+      tft.setFont(Arial_96);
+      tft.setCursor(170, 10+100*cnt);
+      tft.fillRect(170, 10+100*cnt, 150, 96, ST7735_BLACK);
+      cnt++;
+      cnt=cnt%4;
+      if ( msecs < 100) tft.print(msecs);
+      tft.setFont(Arial_14);
+      tft.fillRect(170, 410, 150, 14, ST7735_RED);
+      tft.setCursor(170, 410);
+      tft.print(tft.maxTransactionLengthSeen / (F_CPU / 1'000'000));
+
+#endif // ALT_LIB
       msecs = 0;
     }
   }
