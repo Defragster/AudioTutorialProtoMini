@@ -91,6 +91,9 @@ void setup() {
   //tft.setTextSize(3);
   tft.setCursor(10, 8);
   tft.println("Peak Meter");
+  tft.setFont(Arial_14);
+  tft.setCursor(170, 450);
+  tft.print(F_CPU_ACTUAL );
 
   AudioMemory(10);
   sgtl5000_1.enable();
@@ -184,13 +187,15 @@ void loop() {
         tft.print(min);
       }
       tft.setFont(Arial_14);
-      tft.fillRect(170, 410, 150, 14, ST7735_RED);
+      tft.fillRect(170, 410, 50, 40, ST7735_RED);
       tft.setCursor(170, 410);
 #ifdef ALT_LIB
       tft.print(tft.maxTransactionLengthSeen / (F_CPU / 1'000'000));
 #else
       tft.print(cnt);
 #endif // ALT_LIB
+      tft.setCursor(170, 430);
+      tft.print( (uint32_t)tempmonGetTemp() );
       cnt++;
       cnt = cnt % 2;
       msecs = 0;
