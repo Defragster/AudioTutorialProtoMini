@@ -10,7 +10,7 @@
 #include <ST7796_t3.h>
 #include <st7735_t3_font_Arial.h>
 
-// #define ALT_LIB
+#define ALT_LIB
 
 #include <Adafruit_FT6206.h>
 
@@ -72,6 +72,8 @@ ST7796_t3 tft = ST7796_t3(TFT_CS, TFT_DC);
 //#define SDCARD_MOSI_PIN  11
 //#define SDCARD_SCK_PIN   13
 
+elapsedMillis msecs;
+
 void setup() {
   Serial.begin(9600);
   delay(500);
@@ -106,9 +108,8 @@ void setup() {
 #endif // ALT_LIB
 
   delay(1000);
+  msecs = 0;
 }
-
-elapsedMillis msecs;
 
 void loop() {
   if (playSdWav1.isPlaying() == false) {
@@ -122,6 +123,7 @@ void loop() {
 
   if (msecs > 15) {
     if (peak1.available() && peak2.available()) {
+      msecs = 0;
       float leftNumber = peak1.read();
       float rightNumber = peak2.read();
       static int leftNumberOld = 0;
@@ -153,11 +155,27 @@ void loop() {
       tft.fillRect(100, 444, 40, 16, ST7735_BLACK);
       tft.setCursor(100, 444);
       tft.print(rightNumber);
-      static uint32_t cnt=0;
+      static uint32_t cnt = 0;
+      static uint32_t max = 0;
+      static uint32_t min = 99;
       tft.setFont(Arial_96);
-      tft.setCursor(170, 10+100*cnt);
-      tft.fillRect(170, 10+100*cnt, 150, 96, ST7735_BLACK);
-      if ( msecs < 100) tft.print(msecs);
+      tft.setCursor(170, 10 + 100 * cnt);
+      tft.fillRect(170, 10 + 100 * cnt, 150, 96, ST7735_BLACK);
+      if ( msecs < 100) {
+        tft.print(msecs);
+        if (msecs > max) {
+          max = msecs;
+          tft.setCursor(170, 10 + 100 * 3);
+          tft.fillRect(170, 10 + 100 * 3, 150, 96, ST7735_BLACK);
+          tft.print(max);
+        }
+      }
+      if (msecs < min) {
+        min = msecs;
+        tft.setCursor(170, 10 + 100 * 2);
+        tft.fillRect(170, 10 + 100 * 2, 150, 96, ST7735_BLACK);
+        tft.print(min);
+      }
       tft.setFont(Arial_14);
       tft.fillRect(170, 410, 150, 14, ST7735_RED);
       tft.setCursor(170, 410);
@@ -167,7 +185,7 @@ void loop() {
       tft.print(cnt);
 #endif // ALT_LIB
       cnt++;
-      cnt=cnt%4;
+      cnt = cnt % 2;
       msecs = 0;
     }
   }
