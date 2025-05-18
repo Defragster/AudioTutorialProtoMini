@@ -83,6 +83,7 @@ void setup() {
   tft.init(320, 480);
   tft.invertDisplay(true);  // LCD requires colors to be inverted
   tft.setRotation(2);       // Rotates screen to match the baseboard orientation
+  //tft.setBitrate(24000000);
 
   tft.fillScreen(ST7735_BLACK);
   tft.setTextColor(ST7735_YELLOW);
@@ -160,7 +161,13 @@ void loop() {
       static uint32_t min = 99;
       tft.setFont(Arial_96);
       tft.setCursor(170, 10 + 100 * cnt);
-      tft.fillRect(170, 10 + 100 * cnt, 150, 96, ST7735_BLACK);
+      static uint32_t last[2]; // Reprint inverse of prior insteact of clearing RECT
+      tft.setTextColor(ST7735_BLACK);
+      tft.print(last[cnt]);
+      last[cnt] = msecs;
+      tft.setTextColor(ST7735_YELLOW);
+      tft.setCursor(170, 10 + 100 * cnt);
+      //tft.fillRect(170, 10 + 100 * cnt, 150, 96, ST7735_BLACK);
       if ( msecs < 100) {
         tft.print(msecs);
         if (msecs > max) {
