@@ -10,7 +10,7 @@
 #include <ST7796_t3.h>
 #include <st7735_t3_font_Arial.h>
 
-// #define ALT_LIB
+//#define ALT_LIB
 
 #include <Adafruit_FT6206.h>
 

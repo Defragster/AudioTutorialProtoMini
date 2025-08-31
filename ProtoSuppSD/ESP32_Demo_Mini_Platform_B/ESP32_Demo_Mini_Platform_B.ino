@@ -10,6 +10,7 @@
     Arduino IDE.
 
     This is a simple variation of the ESP32 WiFiScan example program
+    using :: https://github.com/olikraus/u8g2/wiki/u8g2reference#firstpage
 */
 
 #include <Wire.h>
@@ -22,19 +23,19 @@
 //#define SCREEN_HEIGHT 32 // OLED display height, in pixels
 #define BTN_PIN 10
 
-U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R2, /* reset=*/ U8X8_PIN_NONE);
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R2, /* reset=*/U8X8_PIN_NONE);
 //===============================================================================
 //  Initialization
 //===============================================================================
 void setup() {
-  Serial.begin(115200);   // USB port
+  Serial.begin(115200);                         // USB port
   Serial1.begin(115200, SERIAL_8N1, RX2, TX2);  //Port connected to Teensy 4.1
 
   pinMode(BTN_PIN, INPUT_PULLUP);
   u8g2.begin();  // Initialize the SH1106 display if one is attached
   // Enable flip mode (rotates the display 180 degrees)
-  u8g2.setFlipMode(0); // 1 to enable, 0 to disable
-  
+  u8g2.setFlipMode(0);  // 1 to enable, 0 to disable
+
   // Set WiFi to station mode and disconnect from an AP if previously connected
   WiFi.mode(WIFI_STA);
   WiFi.disconnect();
@@ -42,33 +43,46 @@ void setup() {
 
   Serial.println("Setup done");
   // Print something to the SH1106 display if it is attached
-  u8g2.firstPage();                    // Start the write to the display
-  u8g2.setFont(u8g2_font_ncenB14_tr);  // Set the font
-  u8g2.drawStr(3,35,"Hello World!");   // Write 'Hello World!'
-  u8g2.drawRFrame(0,0,127,63,7);       // Draw a rectangle around it
-  u8g2.nextPage();                     // Completes the write to the display
+  u8g2.firstPage();                     // Start the write to the display
+  u8g2.setFont(u8g2_font_ncenB14_tr);   // Set the font
+  u8g2.drawStr(3, 35, "Hello World!");  // Write 'Hello World!'
+  u8g2.drawRFrame(0, 0, 127, 63, 7);    // Draw a rectangle around it
+  u8g2.nextPage();                      // Completes the write to the display
 }
 //===============================================================================
 //  Main
 //===============================================================================
 void loop() {
-  //static   int i = 0;
+  static int ii = 0;
+  if (!digitalRead(BTN_PIN)) {
+    ii++;
+    u8g2.firstPage();                      // Start the write to the display
+    u8g2.setFont(u8g2_font_ncenB14_tr);    // Set the font
+    u8g2.drawStr(3, 20, "Hello Button!");  // Write 'Hello World!'
+    char szNum[32];
+    sprintf(szNum, "%ld", millis());
+    u8g2.drawStr(3, 40, szNum);
+    sprintf(szNum, "%ld", ii);
+    u8g2.drawStr(3, 60, szNum);
+    u8g2.drawRFrame(0, 0, 127, 63, 7);  // Draw a rectangle around it
+    u8g2.nextPage();                    // Completes the write to the display
+  }
   if (Serial1.available()) {
     char command = Serial1.read();
     Serial.println(command);
-    if (command == '?') { // Are you there?
+    if (command == '?') {  // Are you there?
       Serial.println("Y");
-      Serial1.print("Y");  // Acknowledge I'm attached
-      u8g2.firstPage();    // if SH1106 attached, update with status
-      u8g2.setFont(u8g2_font_ncenB12_tr);  // Set the font
-      u8g2.drawStr(3,35,"I'm Connected!");   // Respond to T4.1 query
+      Serial1.print("Y");                     // Acknowledge I'm attached
+      u8g2.firstPage();                       // if SH1106 attached, update with status
+      u8g2.setFont(u8g2_font_ncenB12_tr);     // Set the font
+      u8g2.drawStr(3, 35, "I'm Connected!");  // Respond to T4.1 query
       u8g2.nextPage();
     }
-    if (command == 'S'){
+    if (command == 'S') {
       Serial.println("scan start");
       u8g2.firstPage();
       u8g2.setFont(u8g2_font_ncenB10_tr);  // Set the font
-      u8g2.drawStr(30,35,"Scanning");   // Update SH1106 display
+      u8g2.drawStr(30, 35, "Scanning");    // Update SH1106 display
       u8g2.nextPage();
       // WiFi.scanNetworks will return the number of networks found
       int n = WiFi.scanNetworks();
@@ -100,21 +114,21 @@ void loop() {
           Serial1.println((WiFi.encryptionType(i) == WIFI_AUTH_OPEN) ? " " : "*");
         }
         delay(10);
-       }
-       u8g2.setFont(u8g2_font_6x10_mf);  // Set the font
-       int lineHt = u8g2.getMaxCharHeight();
-       u8g2.clear();  // Clear the display
-       u8g2.setCursor(0,lineHt);
-       for (int i = 0; i < n; ++i){  
-         u8g2.print(WiFi.SSID(i));
-         u8g2.updateDisplay();
-         u8g2.setCursor(0,lineHt*(i+2));
-         delay(10);
-       }
       }
+      u8g2.setFont(u8g2_font_6x10_mf);  // Set the font
+      int lineHt = u8g2.getMaxCharHeight();
+      u8g2.clear();  // Clear the display
+      u8g2.setCursor(0, lineHt);
+      for (int i = 0; i < n; ++i) {
+        u8g2.print(WiFi.SSID(i));
+        u8g2.updateDisplay();
+        u8g2.setCursor(0, lineHt * (i + 2));
+        delay(10);
+      }
+    }
   }
-  if (digitalRead(BTN_PIN)== LOW) {
-  // button on pin 10 has been pressed - do something
-  } 
+  if (digitalRead(BTN_PIN) == LOW) {
+    // button on pin 10 has been pressed - do something
+  }
   WiFi.scanDelete();
 }

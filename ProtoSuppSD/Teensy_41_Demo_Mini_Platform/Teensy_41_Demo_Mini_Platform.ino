@@ -15,20 +15,20 @@
   available WiFi networks.  When the ESP32S returns the scan results,
   the Teensy 4.1 updates those results on the LCD screen and serial port.
 
-  The System button just rechecks the same system information.  Note that the 
+  The System button just rechecks the same system information.  Note that the
   System button won't work if audio is playing.
 
-  The three Teensy 4.1 user buttons simply turn the RGB LED colors ON/OFF 
+  The three Teensy 4.1 user buttons simply turn the RGB LED colors ON/OFF
 
-  The ST7796 LCD uses the ST7796_t3 library branch from:  
+  The ST7796 LCD uses the ST7796_t3 library branch from:
   https://github.com/KurtE/ST7735_t3/tree/ST7796
-  
+
   The FT6336 touch overlay uses the Adafruit_FT6206.h library.
 
-  The 16MB NOR Flash uses this SerialFlash library branch so that it 
+  The 16MB NOR Flash uses this SerialFlash library branch so that it
   will work properly on SPI1.
   https://github.com/KurtE/SerialFlash/tree/use_ptr_not_reference
-  
+
   This example code is in the public domain.
 */
 #include <ST7796_t3.h>
@@ -410,7 +410,7 @@ void SetSystemButton() {
 //===============================================================================
 void SystemCheck() {
 
-  tft.setCursor(5, SYSTEM_Y + SYSTEM_H + 20);  // Set initial cursor position
+  tft.setCursor(0, SYSTEM_Y + SYSTEM_H + 20);  // Set initial cursor position
   tft.setFont(TXT_FONT);                       // Set initial font style and size
   tft.setTextColor(ST7735_WHITE);
 
@@ -424,7 +424,7 @@ void SystemCheck() {
     tft.printf("PSRAM Memory Size = %d Mbyte\n", size);
   }
   tft.println();
-  
+
   // Check for Flash chip installed on Teensy 4.1
   LittleFS_QSPIFlash myfs_NOR;  // NOR FLASH on Teensy
   LittleFS_QPINAND myfs_NAND;   // NAND FLASH 2Gb on Teensy
@@ -464,6 +464,11 @@ void SystemCheck() {
   tft.println();
 
   // Check for ESP32-C3 installed
+  while (ESP32SERIAL.available()) { // Clear ESP32 input buffer before CMD
+    (char) ESP32SERIAL.read();
+  }
+  bool esp32SAttachedLast = esp32SAttached;
+
   ESP32SERIAL.print("?");                          // Ask ESP32-C3 if it is there
   delay(100);                                      // Wait a bit for ESP32 to respond
   if (ESP32SERIAL.available()) {                   // If there is a response
@@ -477,6 +482,9 @@ void SystemCheck() {
       tft.println("ESP32-C3 not found");
       esp32SAttached = false;
     }
+  }
+  else {
+          esp32SAttached = false;
   }
   // Check for NOR Flash on baseboard
   if (!SerialFlash.begin(SPI1, FLASH_CS)) {
@@ -520,14 +528,26 @@ void SystemCheck() {
       Serial.println("USB Flash Drive is connected");
       tft.println("USB Flash Drive is connected");
     }
-    /*
     // Check CPU internal temperature
     Serial.print(tempmonGetTemp());
     Serial.println("°C");
-    tft.println();
+    tft.setCursor(320, 300);
     tft.print("CPU Temp: ");
     tft.print(tempmonGetTemp());
     tft.println("°C");
-    */
+  }
+  if ( esp32SAttached != esp32SAttachedLast ) { // redraw SCAN if ESP32 changes
+    tft.setCursor(SCAN_X + 8, SCAN_Y + 12);
+    tft.setFont(BUTTON_FONT);
+    if ( esp32SAttached ) {
+      tft.fillRoundRect(SCAN_X, SCAN_Y, SCAN_W, SCAN_H, 4, ST7735_RED);
+      tft.setTextColor(ST7735_WHITE);
+      tft.print("Scan WiFi");
+    }
+    else {
+      tft.setTextColor(ST7735_WHITE);
+      tft.fillRoundRect(SCAN_X, SCAN_Y, SCAN_W, SCAN_H, 4, ST7735_BLACK);
+      tft.print("No Scan");
+    }
   }
 }
