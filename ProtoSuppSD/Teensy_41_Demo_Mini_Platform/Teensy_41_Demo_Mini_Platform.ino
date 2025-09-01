@@ -20,13 +20,13 @@
 
   The three Teensy 4.1 user buttons simply turn the RGB LED colors ON/OFF
 
-  The ST7796 LCD uses the ST7796_t3 library branch from:
-  https://github.com/KurtE/ST7735_t3/tree/ST7796
+  The ST7796 LCD support is now rolled into Teensyduino as of Version 1.60 Beta 4.
+  https://forum.pjrc.com/index.php?threads/teensyduino-1-60-beta-5.77176/
 
   The FT6336 touch overlay uses the Adafruit_FT6206.h library.
 
   The 16MB NOR Flash uses this SerialFlash library branch so that it
-  will work properly on SPI1.
+  will work properly on SPI1 until rolled into Teensyduino.
   https://github.com/KurtE/SerialFlash/tree/use_ptr_not_reference
 
   This example code is in the public domain.
@@ -484,11 +484,12 @@ void SystemCheck() {
     }
   }
   else {
-          esp32SAttached = false;
+    esp32SAttached = false;
   }
   // Check for NOR Flash on baseboard
   if (!SerialFlash.begin(SPI1, FLASH_CS)) {
     Serial.println(F("Unable to access SPI Flash chip"));
+    tft.println();
     tft.println("Unable to access SPI Flash Chip");
   } else {
     unsigned char id[5];
@@ -505,37 +506,40 @@ void SystemCheck() {
       tft.println();
       tft.printf("SPI NOR Flash Memory Size = %d Mbyte\n", sizeFlash / 1000000);
     }
-
-    // Check for Ethernet cable connected
-    tft.println();
-    bool link = Ethernet.linkState();
-    Serial.print("Link State: ");
-    if (link == true) {
-      Serial.println("ON");
-      tft.println("Ethernet cable is connected");
-    } else {
-      Serial.println("OFF");
-      tft.println("Ethernet cable is not connected");
-    }
-    tft.println();
-
-    // Check for USB Flash Drive attached
-    myusb.Task();
-    if (!myFiles) {
-      Serial.println("USB Flash Drive not connected");
-      tft.println("USB Flash Drive is not connected");
-    } else {
-      Serial.println("USB Flash Drive is connected");
-      tft.println("USB Flash Drive is connected");
-    }
-    // Check CPU internal temperature
-    Serial.print(tempmonGetTemp());
-    Serial.println("°C");
-    tft.setCursor(320, 300);
-    tft.print("CPU Temp: ");
-    tft.print(tempmonGetTemp());
-    tft.println("°C");
   }
+
+  // Check for Ethernet cable connected
+  tft.println();
+  bool link = Ethernet.linkState();
+  Serial.print("Link State: ");
+  if (link == true) {
+    Serial.println("ON");
+    tft.println("Ethernet cable is connected");
+  } else {
+    Serial.println("OFF");
+    tft.println("Ethernet cable is not connected");
+  }
+  tft.println();
+
+  // Check for USB Flash Drive attached
+  myusb.Task();
+  if (!myFiles) {
+    Serial.println("USB Flash Drive not connected");
+    tft.println("USB Flash Drive is not connected");
+  } else {
+    Serial.println("USB Flash Drive is connected");
+    tft.println("USB Flash Drive is connected");
+  }
+
+  // Check CPU internal temperature
+  Serial.print(tempmonGetTemp());
+  Serial.println("°C");
+  tft.setCursor(320, 300);
+  tft.print("CPU Temp: ");
+  tft.print(tempmonGetTemp());
+  tft.println("°C");
+
+  // Redraw Scan button if something changes with ESP32-C3
   if ( esp32SAttached != esp32SAttachedLast ) { // redraw SCAN if ESP32 changes
     tft.setCursor(SCAN_X + 8, SCAN_Y + 12);
     tft.setFont(BUTTON_FONT);
