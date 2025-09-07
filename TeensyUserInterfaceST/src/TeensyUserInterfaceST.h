@@ -33,7 +33,8 @@
 #ifndef TeensyUserInterface_h
 #define TeensyUserInterface_h
 
-#include <ILI9341_t3.h>
+// #include <ILI9341_t3.h>
+#include <ST7796_t3.h>
 
 
 //
@@ -73,7 +74,8 @@ const uint16_t LCD_GREENYELLOW = 0xAFE5;
 //
 // datatype for fonts
 //
-typedef ILI9341_t3_font_t ui_font;
+// typedef ILI9341_t3_font_t ui_font;
+typedef ST7735_t3_font_t ui_font;
 
 
 //
