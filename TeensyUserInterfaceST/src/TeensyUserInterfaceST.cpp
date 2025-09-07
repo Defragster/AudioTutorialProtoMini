@@ -159,21 +159,16 @@
 // ---------------------------------------------------------------------------------
 
 #include <EEPROM.h>
-//#include <ILI9341_t3.h>
-//#include <XPT2046_Touchscreen.h>
-#include <ST7796_t3.h>
-#include <Adafruit_FT6206.h>
-
-#include "TeensyUserInterfaceST.h"
+#include <ILI9341_t3.h>
+#include <XPT2046_Touchscreen.h>
+#include "TeensyUserInterface.h"
 
 
 //
 // pointers to the LCD and Touch objects
 //
-// ILI9341_t3 *lcd;
-// XPT2046_Touchscreen *ts;
-ST7796_t3 *lcd;
-Adafruit_FT6206 *ts;
+ILI9341_t3 *lcd;
+XPT2046_Touchscreen *ts;
 
 //
 // the size of features for drawing the user interface
@@ -209,10 +204,8 @@ void TeensyUserInterface::begin(int lcdCSPin, int LcdDCPin, int TouchScreenCSPin
   //
   // create the LCD and touchscreen objects
   //
-  //  lcd = new ILI9341_t3(lcdCSPin, LcdDCPin);
-  //  ts = new XPT2046_Touchscreen(TouchScreenCSPin);
-  lcd = new ST7796_t3(lcdCSPin, LcdDCPin);
-  ts = new Adafruit_FT6206();
+  lcd = new ILI9341_t3(lcdCSPin, LcdDCPin);
+  ts = new XPT2046_Touchscreen(TouchScreenCSPin);
   
   //
   // initialize the LCD and touch screen hardware
@@ -2648,7 +2641,7 @@ void TeensyUserInterface::touchScreenInitialize(int lcdOrientation)
 //
 void TeensyUserInterface::touchScreenSetOrientation(int lcdOrientation)
 {
-  // BUGBUG ts->setRotation((lcdOrientation + 2) % 4);
+  ts->setRotation((lcdOrientation + 2) % 4);
   setDefaultTouchScreenCalibrationConstants(lcdOrientation);
   touchState = WAITING_FOR_TOUCH_DOWN_STATE;
 }
@@ -2974,8 +2967,7 @@ boolean TeensyUserInterface::getRAWTouchScreenCoords(int *xRaw, int *yRaw)
 //
 void TeensyUserInterface::lcdInitialize(int lcdOrientation, const ui_font &font)
 {
-  // lcd->begin();
-  lcd->init(320, 480);
+  lcd->begin();
   lcdSetOrientation(lcdOrientation);
   lcdClearScreen(LCD_BLACK);
   lcdSetFontColor(LCD_WHITE);  
