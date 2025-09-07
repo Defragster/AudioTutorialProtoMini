@@ -25,8 +25,9 @@
 // ***********************************************************************
 
 #include <TeensyUserInterfaceST.h>
-#include <font_Arial.h>
-#include <font_ArialBold.h>
+// #include <font_Arial.h>
+// #include <font_ArialBold.h>
+#include <st7735_t3_font_Arial.h>
 
 
 //
@@ -75,7 +76,7 @@ void setup()
   //
   // setup the LCD orientation, the default font and initialize the user interface
   //
-  ui.begin(LCD_CS_PIN, LCD_DC_PIN, TOUCH_CS_PIN, LCD_ORIENTATION_LANDSCAPE_4PIN_RIGHT, Arial_9_Bold);
+  ui.begin(LCD_CS_PIN, LCD_DC_PIN, TOUCH_CS_PIN, LCD_ORIENTATION_LANDSCAPE_4PIN_RIGHT, Arial_9);
 }
 
 
@@ -342,7 +343,7 @@ void drawStopwatch(boolean redrawAllFlg)
   //
   // blank the screen where the stopwatch's number are displayed
   //
-  ui.lcdSetFont(Arial_20_Bold);
+  ui.lcdSetFont(Arial_20);
   int textWidth = ui.lcdStringWidthInPixels(sBuf);
   int textHeight = ui.lcdGetFontHeightWithoutDecenders();
   int textY = ui.displaySpaceCenterY-40;
