@@ -47,10 +47,9 @@
 
 // ***********************************************************************
 
-#include <TeensyUserInterface.h>
-#include <font_Arial.h>
-#include <font_ArialBold.h>
-
+#include <TeensyUserInterfaceST.h>
+#include <st7735_t3_font_Arial.h>
+#include <st7735_t3_font_ArialBold.h>
 
 //
 // create the user interface object
@@ -68,19 +67,17 @@ void setup()
   //
   // pin numbers used in addition to the default SPI pins
   //
-  const int LCD_CS_PIN = 10;
+  const int LCD_CS_PIN = 40; //xx 10;
   const int LCD_DC_PIN = 9;
-  const int TOUCH_CS_PIN = 8;
-
+  const int TOUCH_CS_PIN = 41; //xx 8;
   
   //
-  // this is where you set the display's orientation, choosing between Portrait 
-  // and Landscape modes by uncommenting the one you want
+  // setup the LCD orientation, the default font and initialize the user interface
   //
   ui.begin(LCD_CS_PIN, LCD_DC_PIN, TOUCH_CS_PIN, LCD_ORIENTATION_PORTRAIT_4PIN_TOP, Arial_9_Bold);
-//  ui.begin(LCD_ORIENTATION_LANDSCAPE_4PIN_LEFT, Arial_9_Bold);
-//  ui.begin(LCD_ORIENTATION_PORTRAIT_4PIN_BOTTOM, Arial_9_Bold);
-//  ui.begin(LCD_ORIENTATION_LANDSCAPE_4PIN_RIGHT, Arial_9_Bold);
+//  ui.begin(LCD_CS_PIN, LCD_DC_PIN, TOUCH_CS_PIN, LCD_ORIENTATION_LANDSCAPE_4PIN_LEFT, Arial_9_Bold);
+//  ui.begin(LCD_CS_PIN, LCD_DC_PIN, TOUCH_CS_PIN, LCD_ORIENTATION_PORTRAIT_4PIN_BOTTOM, Arial_9_Bold);
+//  ui.begin(LCD_CS_PIN, LCD_DC_PIN, TOUCH_CS_PIN, LCD_ORIENTATION_LANDSCAPE_4PIN_RIGHT, Arial_9_Bold);
 }
 
 
@@ -180,7 +177,7 @@ void commandFirstLawOfRobotics(void)
   //
   // set the font for drawing the text
   //
-  ui.lcdSetFont(Arial_12);
+  ui.lcdSetFont(Arial_12_Bold);
   
   //
   // print some text in the LCD's display space

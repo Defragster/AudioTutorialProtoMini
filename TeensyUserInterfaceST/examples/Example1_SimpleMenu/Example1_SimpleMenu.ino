@@ -49,9 +49,8 @@
 // ***********************************************************************
 
 #include <TeensyUserInterfaceST.h>
-#include <font_Arial.h>
-#include <font_ArialBold.h>
-
+#include <st7735_t3_font_Arial.h>
+#include <st7735_t3_font_ArialBold.h>
 
 //
 // create the user interface object

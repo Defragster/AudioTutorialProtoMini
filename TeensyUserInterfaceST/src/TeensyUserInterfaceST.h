@@ -359,6 +359,7 @@ class TeensyUserInterface
     int touchScreenToLCDOffsetY;
     float touchScreenToLCDScalerY;
     int touchState;
+    int touchOrient;
 
 
     //

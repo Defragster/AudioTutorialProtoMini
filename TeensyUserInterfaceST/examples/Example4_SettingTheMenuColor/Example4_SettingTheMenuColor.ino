@@ -18,10 +18,9 @@
 
 // ***********************************************************************
 
-#include <TeensyUserInterface.h>
-#include <font_Arial.h>
-#include <font_ArialBold.h>
-
+#include <TeensyUserInterfaceST.h>
+#include <st7735_t3_font_Arial.h>
+#include <st7735_t3_font_ArialBold.h>
 
 //
 // create the user interface object
@@ -39,9 +38,9 @@ void setup()
   //
   // pin numbers used in addition to the default SPI pins
   //
-  const int LCD_CS_PIN = 10;
+  const int LCD_CS_PIN = 40; //xx 10;
   const int LCD_DC_PIN = 9;
-  const int TOUCH_CS_PIN = 8;
+  const int TOUCH_CS_PIN = 41; //xx 8;
   
   //
   // setup the LCD orientation, the default font and initialize the user interface

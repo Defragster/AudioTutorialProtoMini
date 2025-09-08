@@ -2635,7 +2635,7 @@ const long TOUCH_AUTO_REPEAT_RATE = 120;
 //
 void TeensyUserInterface::touchScreenInitialize(int lcdOrientation)
 {
-  ts->begin();
+  ts->begin(40);
   touchScreenSetOrientation(lcdOrientation);
 }
 
@@ -2648,8 +2648,9 @@ void TeensyUserInterface::touchScreenInitialize(int lcdOrientation)
 //
 void TeensyUserInterface::touchScreenSetOrientation(int lcdOrientation)
 {
-  // BUGBUG ts->setRotation((lcdOrientation + 2) % 4);
-  setDefaultTouchScreenCalibrationConstants(lcdOrientation);
+  // BUGBUG 
+  // ts->setRotation((lcdOrientation + 3) % 4);
+  //setDefaultTouchScreenCalibrationConstants(lcdOrientation);
   touchState = WAITING_FOR_TOUCH_DOWN_STATE;
 }
 
@@ -2927,11 +2928,37 @@ boolean TeensyUserInterface::getTouchScreenCoords(int *xLCD, int *yLCD)
   //
   // convert the coordinates into LCD space
   //
-  int x = (int)((float)xRaw / touchScreenToLCDScalerX) - touchScreenToLCDOffsetX;
-  *xLCD = constrain(x, 0, lcdWidth - 1);
-
-  int y = (int)((float)yRaw / touchScreenToLCDScalerY) - touchScreenToLCDOffsetY;
-  *yLCD = constrain(y, 0, lcdHeight - 1);
+  switch(touchOrient)
+  {
+    case LCD_ORIENTATION_PORTRAIT_4PIN_TOP:
+    {
+      *xLCD = xRaw;
+      *yLCD = yRaw;
+      break;
+    }
+    
+    case LCD_ORIENTATION_LANDSCAPE_4PIN_LEFT:
+    {
+      *xLCD = yRaw;
+      *yLCD = lcdHeight - xRaw;
+      break;
+    }
+    
+    case LCD_ORIENTATION_PORTRAIT_4PIN_BOTTOM:
+    {
+      *xLCD = lcdWidth - xRaw;
+      *yLCD = lcdHeight - yRaw;
+      break;
+    }
+    
+    case LCD_ORIENTATION_LANDSCAPE_4PIN_RIGHT:
+    default:
+    {
+      *xLCD = lcdWidth - yRaw;
+      *yLCD = xRaw;
+      break;
+    }
+  }
 
   return(true);
 }
@@ -2955,7 +2982,6 @@ boolean TeensyUserInterface::getRAWTouchScreenCoords(int *xRaw, int *yRaw)
   // get the raw coordinates and return them
   //
   TS_Point rawTouchPoint = ts->getPoint();
-
   *xRaw = rawTouchPoint.x;
   *yRaw = rawTouchPoint.y;
   return(true);
@@ -2976,10 +3002,12 @@ void TeensyUserInterface::lcdInitialize(int lcdOrientation, const ui_font &font)
 {
   // lcd->begin();
   lcd->init(320, 480);
+  lcd->invertDisplay(true); 
   lcdSetOrientation(lcdOrientation);
   lcdClearScreen(LCD_BLACK);
   lcdSetFontColor(LCD_WHITE);  
   lcdSetFont(font);
+  touchOrient = lcdOrientation;
 }
 
 
@@ -3495,7 +3523,7 @@ byte TeensyUserInterface::readConfigurationByte(int EEPromAddress, byte defaultV
 {
   if (EEPROM.read(EEPromAddress) == 0xff)
     return(defaultValue);
-	
+	else
     return(EEPROM.read(EEPromAddress + 1));
 }
 
