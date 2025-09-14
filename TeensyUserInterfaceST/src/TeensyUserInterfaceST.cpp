@@ -159,21 +159,24 @@
 // ---------------------------------------------------------------------------------
 
 #include <EEPROM.h>
-//#include <ILI9341_t3.h>
-//#include <XPT2046_Touchscreen.h>
-#include <ST7796_t3.h>
-#include <Adafruit_FT6206.h>
-
 #include "TeensyUserInterfaceST.h"
+
+#if __has_include("ILI9341_t3.h")
+#include <ILI9341_t3.h>
+#include <XPT2046_Touchscreen.h>
+#elif __has_include("ST7796_t3.h")
+#include <ST7796_t3.h>
+#define ILI9341_t3 ST7796_t3
+#include <Adafruit_FT6206.h>
+#define XPT2046_Touchscreen Adafruit_FT6206
+#endif
 
 
 //
 // pointers to the LCD and Touch objects
 //
-// ILI9341_t3 *lcd;
-// XPT2046_Touchscreen *ts;
-ST7796_t3 *lcd;
-Adafruit_FT6206 *ts;
+ILI9341_t3 *lcd;
+XPT2046_Touchscreen *ts;
 
 //
 // the size of features for drawing the user interface
@@ -209,10 +212,12 @@ void TeensyUserInterface::begin(int lcdCSPin, int LcdDCPin, int TouchScreenCSPin
   //
   // create the LCD and touchscreen objects
   //
-  //  lcd = new ILI9341_t3(lcdCSPin, LcdDCPin);
-  //  ts = new XPT2046_Touchscreen(TouchScreenCSPin);
-  lcd = new ST7796_t3(lcdCSPin, LcdDCPin);
+  lcd = new ILI9341_t3(lcdCSPin, LcdDCPin);
+#if __has_include("Adafruit_FT6206.h")
   ts = new Adafruit_FT6206();
+#elif __has_include("ILI9341_t3.h")
+  ts = new XPT2046_Touchscreen(TouchScreenCSPin);
+#endif
   
   //
   // initialize the LCD and touch screen hardware

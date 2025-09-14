@@ -34,7 +34,7 @@ void setup() {
   pinMode(BTN_PIN, INPUT_PULLUP);
   u8g2.begin();  // Initialize the SH1106 display if one is attached
   // Enable flip mode (rotates the display 180 degrees)
-  u8g2.setFlipMode(0);  // 1 to enable, 0 to disable
+  u8g2.setFlipMode(1);  // 1 to enable, 0 to disable
 
   // Set WiFi to station mode and disconnect from an AP if previously connected
   WiFi.mode(WIFI_STA);
